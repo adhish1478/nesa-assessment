@@ -1,0 +1,15 @@
+{% extends "airports/base.html" %}
+
+{% block content %}
+
+<h2>Longest Route from Root</h2>
+
+<p><strong>Distance:</strong> {{ distance }}</p>
+
+<p><strong>Path:</strong>
+    {% for node in path %}
+        {{ node.name }}{% if not forloop.last %} → {% endif %}
+    {% endfor %}
+</p>
+
+{% endblock %}

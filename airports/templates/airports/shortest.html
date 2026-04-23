@@ -1,0 +1,16 @@
+{% extends 'airports/base.html' %}
+
+{% block content %}
+<h2>Distance Between Nodes</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Calculate</button>
+</form>
+
+{% if result %}
+<p>Distance: {{ result }}</p>
+{% endif %}
+
+{% endblock %}

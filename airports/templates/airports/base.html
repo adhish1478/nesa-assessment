@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Routes</title>
+</head>
+
+<body>
+
+<nav>
+    <a href="/distance/">Distance from Root</a> |
+    <a href="/longest/">Longest Route</a> |
+    <a href="/shortest/">Distance Between</a> |
+    <a href="/add/">Add Node</a>
+</nav>
+
+<hr>
+
+{% block content %}{% endblock %}
+
+<hr>
+
+<h3>Current Tree</h3>
+
+<div id="tree"></div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+fetch('/tree-data/')
+  .then(res => res.json())
+  .then(data => {
+
+    if (!data || !data.name) {
+        console.error("Invalid tree data:", data);
+        return;
+    }
+
+    const width = 1000;
+    const height = 600;
+
+    const treeLayout = d3.tree().nodeSize([60, 120]);
+
+    const root = d3.hierarchy(data);
+    treeLayout(root);
+
+    const svg = d3.select("#tree")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .style("font", "12px sans-serif");
+
+    // center group
+    const g = svg.append("g")
+      .attr("transform", "translate(500, 50)");
+
+    const diagonal = d3.linkVertical()
+      .x(d => d.x)
+      .y(d => d.y);
+
+    // LINKS (edges)
+    g.append("g")
+      .selectAll("path")
+      .data(root.links())
+      .join("path")
+      .attr("fill", "none")
+      .attr("stroke", "#555")
+      .attr("stroke-width", 1.5)
+      .attr("d", diagonal);
+
+    // EDGE LABELS (distance)
+    g.append("g")
+      .selectAll("text")
+      .data(root.links())
+      .join("text")
+      .attr("x", d => (d.source.x + d.target.x) / 2)
+      .attr("y", d => (d.source.y + d.target.y) / 2 - 5)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .attr("fill", "#333")
+      .text(d => d.target.data.distance || "");
+
+    // NODES
+    const node = g.append("g")
+      .selectAll("g")
+      .data(root.descendants())
+      .join("g")
+      .attr("transform", d => `translate(${d.x},${d.y})`);
+
+    // circles
+    node.append("circle")
+      .attr("r", 18)
+      .attr("fill", "#007bff");
+
+    // labels inside circles
+    node.append("text")
+      .attr("dy", "0.35em")
+      .attr("text-anchor", "middle")
+      .attr("fill", "white")
+      .attr("font-size", "12px")
+      .text(d => d.data.name);
+
+  });
+</script>
+
+</body>
+</html>

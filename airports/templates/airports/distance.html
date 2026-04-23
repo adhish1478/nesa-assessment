@@ -1,0 +1,20 @@
+{% extends 'airports/base.html' %}
+
+{% block content %}
+<h2>Distance from Root</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Find</button>
+</form>
+
+{% if result is not None %}
+<p>Distance: {{ result }}</p>
+{% endif %}
+
+{% if error %}
+<p style="color: red;"><strong>{{ error }}</strong></p>
+{% endif %}
+
+{% endblock %}
